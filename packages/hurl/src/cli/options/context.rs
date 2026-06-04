@@ -80,6 +80,7 @@ pub const HURL_RETRY: &str = "HURL_RETRY";
 pub const HURL_RETRY_INTERVAL: &str = "HURL_RETRY_INTERVAL";
 pub const HURL_SECRET_PREFIX: &str = "HURL_SECRET_";
 pub const HURL_TEST: &str = "HURL_TEST";
+pub const HURL_TRUNCATE_BODY: &str = "HURL_TRUNCATE_BODY";
 pub const HURL_USER: &str = "HURL_USER";
 pub const HURL_USER_AGENT: &str = "HURL_USER_AGENT";
 pub const HURL_VARIABLE_PREFIX: &str = "HURL_VARIABLE_";
@@ -253,6 +254,13 @@ impl RunContext {
     /// Returns the env var for max time duration.
     pub fn max_time_env_var(&self) -> Option<&str> {
         self.hurl_env_vars.get(HURL_MAX_TIME).map(|v| v.as_str())
+    }
+
+    /// Returns the env var for truncating request and response bodies.
+    pub fn truncate_body_env_var(&self) -> Option<&str> {
+        self.hurl_env_vars
+            .get(HURL_TRUNCATE_BODY)
+            .map(|v| v.as_str())
     }
 
     /// Returns the env var for the user authentication.

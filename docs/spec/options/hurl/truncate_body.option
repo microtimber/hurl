@@ -1,0 +1,12 @@
+name: truncate_body
+long: truncate-body
+value: BYTES
+value_default: -1
+value_parser: clap::value_parser!(i64)
+help: Truncate request and response bodies to at most <BYTES> bytes
+help_heading: HTTP options
+cli_only: true
+config_file: true
+env_var: HURL_TRUNCATE_BODY
+---
+Truncate request and response bodies to at most the first <BYTES> bytes. The default is -1 which keeps the full body (no truncation). A positive integer N retains at most the first N bytes; bodies smaller than N are unaffected. This applies to all bodies regardless of Content-Type, in contrast to `--truncate-text-body` which only applies to text content types. Use this option when asserts on the response body are limited to its heading, or when running with `--no-assert`, to reduce memory usage.

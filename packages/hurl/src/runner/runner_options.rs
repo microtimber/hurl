@@ -74,6 +74,7 @@ pub struct RunnerOptionsBuilder {
     ssl_no_revoke: bool,
     timeout: Duration,
     to_entry: Option<usize>,
+    truncate_body: i64,
     unix_socket: Option<String>,
     use_cookie_store: bool,
     user: Option<String>,
@@ -130,6 +131,7 @@ impl Default for RunnerOptionsBuilder {
             ssl_no_revoke: false,
             timeout: Duration::from_secs(300),
             to_entry: None,
+            truncate_body: -1,
             unix_socket: None,
             use_cookie_store: true,
             user: None,
@@ -467,6 +469,13 @@ impl RunnerOptionsBuilder {
         self
     }
 
+    /// Sets the maximum number of bytes retained for request and response bodies.
+    /// A negative value means keep the full body; a positive value caps each body to that many bytes.
+    pub fn truncate_body(&mut self, truncate_body: i64) -> &mut Self {
+        self.truncate_body = truncate_body;
+        self
+    }
+
     /// Sets the specified unix domain socket to connect through, instead of using the network.
     pub fn unix_socket(&mut self, unix_socket: Option<String>) -> &mut Self {
         self.unix_socket = unix_socket;
@@ -539,6 +548,7 @@ impl RunnerOptionsBuilder {
             ssl_no_revoke: self.ssl_no_revoke,
             timeout: self.timeout,
             to_entry: self.to_entry,
+            truncate_body: self.truncate_body,
             unix_socket: self.unix_socket.clone(),
             use_cookie_store: self.use_cookie_store,
             user: self.user.clone(),
@@ -648,6 +658,8 @@ pub struct RunnerOptions {
     pub(crate) timeout: Duration,
     /// Executes Hurl file to to_entry (starting at 1), ignores the remaining of the file.
     pub(crate) to_entry: Option<usize>,
+    /// Maximum number of bytes retained for request and response bodies; negative means keep full.
+    pub(crate) truncate_body: i64,
     /// Sets the specified unix domain socket to connect through, instead of using the network.
     pub(crate) unix_socket: Option<String>,
     /// Activates the cookie support for a single file.

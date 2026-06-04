@@ -84,6 +84,7 @@ _hurl() {
     '--ssl-no-revoke[(Windows) Tell Hurl to disable certificate revocation checks]' \
     '--test[Activate test mode (use parallel execution)]' \
     '--to-entry[Execute Hurl file to ENTRY_NUMBER (starting at 1)]: :' \
+    '--truncate-body[Truncate request and response bodies to at most <BYTES> bytes]: :' \
     '--unix-socket[(HTTP) Connect through this Unix domain socket, instead of using the network]: :_files' \
     '(-u --user)'{-u,--user}'[Add basic Authentication header to each request]: :' \
     '(-A --user-agent)'{-A,--user-agent}'[Specify the User-Agent string to send to the HTTP server]: :' \

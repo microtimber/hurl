@@ -659,6 +659,16 @@ pub fn to_entry() -> clap::Arg {
         .num_args(1)
 }
 
+pub fn truncate_body() -> clap::Arg {
+    clap::Arg::new("truncate_body")
+        .long("truncate-body")
+        .value_name("BYTES")
+        .value_parser(clap::value_parser!(i64))
+        .help("Truncate request and response bodies to at most <BYTES> bytes [default: -1]")
+        .help_heading("HTTP options")
+        .num_args(1)
+}
+
 pub fn unix_socket() -> clap::Arg {
     clap::Arg::new("unix_socket")
         .long("unix-socket")

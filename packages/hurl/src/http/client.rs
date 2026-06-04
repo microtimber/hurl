@@ -310,6 +310,13 @@ impl Client {
         let headers = self.parse_response_headers(&response_headers);
         let length = response_body.len();
 
+        if options.truncate_body >= 0 && response_body.len() > options.truncate_body as usize {
+            response_body.truncate(options.truncate_body as usize);
+        }
+        if options.truncate_body >= 0 && request_body.len() > options.truncate_body as usize {
+            request_body.truncate(options.truncate_body as usize);
+        }
+
         if options.discard_body {
             response_body.clear();
         }

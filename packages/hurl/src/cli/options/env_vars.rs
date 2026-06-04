@@ -28,7 +28,7 @@ use super::context::{
     HURL_CONNECT_TIMEOUT, HURL_DELAY, HURL_ERROR_FORMAT, HURL_FOLLOW_LOCATION,
     HURL_FOLLOW_LOCATION_TRUSTED, HURL_HEADER, HURL_JOBS, HURL_LIMIT_RATE, HURL_MAX_FILESIZE,
     HURL_MAX_REDIRS, HURL_MAX_TIME, HURL_NO_HEADER, HURL_RETRY, HURL_RETRY_INTERVAL,
-    HURL_VERBOSITY,
+    HURL_TRUNCATE_BODY, HURL_VERBOSITY,
 };
 use super::variables::TypeKind;
 use super::{
@@ -235,6 +235,24 @@ fn max_redirect(context: &RunContext, default_value: Count) -> Result<Count, Cli
     }
 }
 
+fn truncate_body(context: &RunContext, default_value: i64) -> Result<i64, CliOptionsError> {
+    match context.truncate_body_env_var() {
+        Some(value) => value
+            .parse::<i64>()
+            .map_err(|e| err_from(e, HURL_TRUNCATE_BODY))
+            .and_then(|n| {
+                if n == 0 {
+                    Err(CliOptionsError::Error(format!(
+                        "{HURL_TRUNCATE_BODY} cannot be 0, use -1 to keep the full body"
+                    )))
+                } else {
+                    Ok(n)
+                }
+            }),
+        None => Ok(default_value),
+    }
+}
+
 fn no_assert(context: &RunContext, default_value: bool) -> bool {
     context.no_assert_env_var().unwrap_or(default_value)
 }
@@ -412,6 +430,7 @@ pub fn parse_env_vars(
     let retry_interval = retry_interval(context, default_options.retry_interval)?;
     let secrets = secrets(context, default_options.secrets)?;
     let timeout = timeout(context, default_options.timeout)?;
+    let truncate_body = truncate_body(context, default_options.truncate_body)?;
     let user = user(context, default_options.user);
     let user_agent = user_agent(context, default_options.user_agent);
     let variables = variables(context, default_options.variables)?;
@@ -450,6 +469,7 @@ pub fn parse_env_vars(
         secrets,
         test,
         timeout,
+        truncate_body,
         user,
         user_agent,
         variables,
@@ -614,5 +634,30 @@ mod tests {
         let ctx = RunContext::new(env_vars_override, stdin_term, stdout_term, stderr_term);
         let updated_options = parse_env_vars(&ctx, CliOptions::default()).unwrap();
         assert!(updated_options.discard_body);
+    }
+
+    #[test]
+    fn test_truncate_body_env_var() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+        let env_vars = HashMap::new();
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, options).unwrap();
+        assert_eq!(updated_options.truncate_body, -1);
+
+        let env_vars_override =
+            HashMap::from([("HURL_TRUNCATE_BODY".to_string(), "256".to_string())]);
+        let ctx = RunContext::new(env_vars_override, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, CliOptions::default()).unwrap();
+        assert_eq!(updated_options.truncate_body, 256);
+
+        let env_vars_override =
+            HashMap::from([("HURL_TRUNCATE_BODY".to_string(), "-1".to_string())]);
+        let ctx = RunContext::new(env_vars_override, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, CliOptions::default()).unwrap();
+        assert_eq!(updated_options.truncate_body, -1);
     }
 }

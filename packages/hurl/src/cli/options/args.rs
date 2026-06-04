@@ -89,6 +89,7 @@ pub fn parse_cli_args(
         .arg(commands::proxy())
         .arg(commands::resolve())
         .arg(commands::ssl_no_revoke())
+        .arg(commands::truncate_body())
         .arg(commands::unix_socket())
         .arg(commands::user())
         .arg(commands::user_agent())
@@ -239,6 +240,7 @@ fn parse_arg_matches(
     let test = test(arg_matches, default_options.test);
     let timeout = timeout(arg_matches, default_options.timeout)?;
     let to_entry = to_entry(arg_matches, default_options.to_entry);
+    let truncate_body = truncate_body(arg_matches, default_options.truncate_body)?;
     let unix_socket = unix_socket(arg_matches, default_options.unix_socket);
     let user = user(arg_matches, default_options.user);
     let user_agent = user_agent(arg_matches, default_options.user_agent);
@@ -307,6 +309,7 @@ fn parse_arg_matches(
         test,
         timeout,
         to_entry,
+        truncate_body,
         unix_socket,
         user,
         user_agent,
@@ -700,6 +703,16 @@ fn max_redirect(arg_matches: &ArgMatches, default_value: Count) -> Result<Count,
             let message = format!("invalid value '{m}' for '--max-redirs <NUM>' ({error})");
             CliOptionsError::Error(message)
         }),
+        None => Ok(default_value),
+    }
+}
+
+fn truncate_body(arg_matches: &ArgMatches, default_value: i64) -> Result<i64, CliOptionsError> {
+    match get::<i64>(arg_matches, "truncate_body") {
+        Some(n) if n == 0 => Err(CliOptionsError::Error(
+            "Option --truncate-body cannot be 0, use -1 to keep the full body".to_string(),
+        )),
+        Some(n) => Ok(n),
         None => Ok(default_value),
     }
 }

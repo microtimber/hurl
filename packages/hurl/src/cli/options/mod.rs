@@ -111,6 +111,7 @@ pub struct CliOptions {
     pub test: bool,
     pub timeout: Duration,
     pub to_entry: Option<usize>,
+    pub truncate_body: i64,
     pub unix_socket: Option<String>,
     pub user: Option<String>,
     pub user_agent: Option<String>,
@@ -310,6 +311,7 @@ impl Default for CliOptions {
             test: false,
             timeout: Duration::from_secs(300),
             to_entry: None,
+            truncate_body: -1,
             unix_socket: None,
             user: None,
             user_agent: None,
@@ -414,6 +416,7 @@ impl CliOptions {
         let ntlm = self.ntlm;
         let timeout = self.timeout;
         let to_entry = self.to_entry;
+        let truncate_body = self.truncate_body;
         let unix_socket = self.unix_socket.clone();
         let use_cookie_store = !self.no_cookie_store;
         let user = self.user.clone();
@@ -464,6 +467,7 @@ impl CliOptions {
             .ssl_no_revoke(ssl_no_revoke)
             .timeout(timeout)
             .to_entry(to_entry)
+            .truncate_body(truncate_body)
             .unix_socket(unix_socket)
             .use_cookie_store(use_cookie_store)
             .user(user)

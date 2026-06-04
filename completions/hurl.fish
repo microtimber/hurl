@@ -67,6 +67,7 @@ complete -c hurl -l secrets-file -d 'Define a secrets file in which you define y
 complete -c hurl -l ssl-no-revoke -d '(Windows) Tell Hurl to disable certificate revocation checks'
 complete -c hurl -l test -d 'Activate test mode (use parallel execution)'
 complete -c hurl -l to-entry -d 'Execute Hurl file to ENTRY_NUMBER (starting at 1)'
+complete -c hurl -l truncate-body -d 'Truncate request and response bodies to at most <BYTES> bytes'
 complete -c hurl -l unix-socket -d '(HTTP) Connect through this Unix domain socket, instead of using the network'
 complete -c hurl -l user -d 'Add basic Authentication header to each request'
 complete -c hurl -l user-agent -d 'Specify the User-Agent string to send to the HTTP server'

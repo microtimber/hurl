@@ -363,6 +363,14 @@ Provide a custom address for a specific host and port pair. Using this, you can 
 
 This is a cli-only option.
 
+#### --truncate-body <BYTES> {#truncate-body}
+
+Truncate request and response bodies to at most the first <BYTES> bytes. The default is -1 which keeps the full body (no truncation). A positive integer N retains at most the first N bytes; bodies smaller than N are unaffected. This applies to all bodies regardless of Content-Type, in contrast to `--truncate-text-body` which only applies to text content types. Use this option when asserts on the response body are limited to its heading, or when running with `--no-assert`, to reduce memory usage.
+
+Environment variables: HURL_TRUNCATE_BODY
+
+This is a cli-only option.
+
 #### --unix-socket <PATH> {#unix-socket}
 
 (HTTP) Connect through this Unix domain socket, instead of using the network.

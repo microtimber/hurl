@@ -186,6 +186,22 @@ fn parse_option(reader: &mut Reader, options: &mut CliOptions) -> Result<(), Con
             options.discard_body = true;
             Ok(())
         }
+        "truncate-body" => {
+            parse_value_separator(reader)?;
+            save = reader.cursor();
+            let value = parse_value(reader)?;
+            let truncate_body = value.parse::<i64>().map_err(|_| {
+                ConfigFileError::new(save.pos, "Option --truncate-body requires an integer value")
+            })?;
+            if truncate_body == 0 {
+                return Err(ConfigFileError::new(
+                    save.pos,
+                    "Option --truncate-body cannot be 0, use -1 to keep the full body",
+                ));
+            }
+            options.truncate_body = truncate_body;
+            Ok(())
+        }
         "no-assert" => {
             expect_no_value(reader)?;
             options.no_assert = true;
@@ -358,6 +374,40 @@ mod tests {
         let err = parse_option(&mut reader, &mut options).unwrap_err();
         assert_eq!(err.pos, Pos::new(1, 15));
         assert_eq!(err.message, "Not expecting a value for this option");
+    }
+
+    #[test]
+    fn test_parse_option_truncate_body() {
+        let mut reader = Reader::new("--truncate-body=1024\n");
+        let mut options = CliOptions::default();
+        assert_eq!(options.truncate_body, -1);
+        assert!(parse_option(&mut reader, &mut options).is_ok());
+        assert_eq!(options.truncate_body, 1024);
+    }
+
+    #[test]
+    fn test_parse_option_truncate_body_default_is_minus_one() {
+        let options = CliOptions::default();
+        assert_eq!(options.truncate_body, -1);
+    }
+
+    #[test]
+    fn test_parse_option_truncate_body_explicit_minus_one() {
+        let mut reader = Reader::new("--truncate-body=-1\n");
+        let mut options = CliOptions::default();
+        assert!(parse_option(&mut reader, &mut options).is_ok());
+        assert_eq!(options.truncate_body, -1);
+    }
+
+    #[test]
+    fn test_parse_option_truncate_body_rejects_zero() {
+        let mut reader = Reader::new("--truncate-body=0\n");
+        let mut options = CliOptions::default();
+        let err = parse_option(&mut reader, &mut options).unwrap_err();
+        assert_eq!(
+            err.message,
+            "Option --truncate-body cannot be 0, use -1 to keep the full body"
+        );
     }
 
     #[test]
