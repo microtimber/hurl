@@ -1,0 +1,8 @@
+name: keep_binary_body
+long: keep-binary-body
+help: Keep binary response body
+help_heading: HTTP options
+config_file: true
+env_var: HURL_KEEP_BINARY_BODY
+---
+Keep binary response body, even when the response content type is not text.

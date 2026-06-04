@@ -85,6 +85,8 @@ pub const HURL_VARIABLE_PREFIX: &str = "HURL_VARIABLE_";
 pub const HURL_VERBOSE: &str = "HURL_VERBOSE";
 pub const HURL_VERBOSITY: &str = "HURL_VERBOSITY";
 pub const HURL_VERY_VERBOSE: &str = "HURL_VERY_VERBOSE";
+pub const HURL_KEEP_BINARY_BODY: &str = "HURL_KEEP_BINARY_BODY";
+pub const HURL_TRUNCATE_TEXT_BODY: &str = "HURL_TRUNCATE_TEXT_BODY";
 
 impl RunContext {
     /// Creates a new context. The environment is captured and will be seen as non-mutable for the
@@ -339,6 +341,18 @@ impl RunContext {
     /// `None` otherwise.
     pub fn test_env_var(&self) -> Option<bool> {
         self.get_env_var_bool(HURL_TEST)
+    }
+
+    /// Returns the env var for keeping binary body.
+    pub fn keep_binary_body_env_var(&self) -> Option<bool> {
+        self.get_env_var_bool(HURL_KEEP_BINARY_BODY)
+    }
+
+    /// Returns the env var for truncating text body.
+    pub fn truncate_text_body_env_var(&self) -> Option<&str> {
+        self.hurl_env_vars
+            .get(HURL_TRUNCATE_TEXT_BODY)
+            .map(|v| v.as_str())
     }
 
     /// Returns the map of Hurl variables injected by environment variables.

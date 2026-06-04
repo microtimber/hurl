@@ -176,6 +176,24 @@ fn parse_option(reader: &mut Reader, options: &mut CliOptions) -> Result<(), Con
             options.fail_with_body = true;
             Ok(())
         }
+        "keep-binary-body" => {
+            expect_no_value(reader)?;
+            options.keep_binary_body = true;
+            Ok(())
+        }
+        "truncate-text-body" => {
+            parse_value_separator(reader)?;
+            save = reader.cursor();
+            let value = parse_value(reader)?;
+            let truncate = value.parse::<i64>().map_err(|_| {
+                ConfigFileError::new(
+                    save.pos,
+                    "Option --truncate-text-body requires an integer value",
+                )
+            })?;
+            options.truncate_text_body = truncate;
+            Ok(())
+        }
         "no-assert" => {
             expect_no_value(reader)?;
             options.no_assert = true;
@@ -389,5 +407,56 @@ mod tests {
         let content = "--user-agent=\"Mozilla/5.0 A\" --verbose\n";
         let err = parse_config(content, CliOptions::default()).unwrap_err();
         assert_eq!(err.message, "characters after the closing quote");
+    }
+
+    #[test]
+    fn test_parse_option_keep_binary_body() {
+        let mut reader = Reader::new("--keep-binary-body\n");
+        let mut options = CliOptions::default();
+        assert!(!options.keep_binary_body);
+        assert!(parse_option(&mut reader, &mut options).is_ok());
+        assert!(options.keep_binary_body);
+        assert_eq!(reader.cursor().pos, Pos::new(2, 1));
+    }
+
+    #[test]
+    fn test_parse_option_truncate_text_body() {
+        let mut reader = Reader::new("--truncate-text-body=64\n");
+        let mut options = CliOptions::default();
+        assert_eq!(options.truncate_text_body, -1);
+        assert!(parse_option(&mut reader, &mut options).is_ok());
+        assert_eq!(options.truncate_text_body, 64);
+        assert_eq!(reader.cursor().pos, Pos::new(1, 24));
+    }
+
+    #[test]
+    fn test_parse_option_truncate_text_body_negative() {
+        let mut reader = Reader::new("--truncate-text-body=-1\n");
+        let mut options = CliOptions::default();
+        assert_eq!(options.truncate_text_body, -1);
+        assert!(parse_option(&mut reader, &mut options).is_ok());
+        assert_eq!(options.truncate_text_body, -1);
+        assert_eq!(reader.cursor().pos, Pos::new(1, 24));
+    }
+
+    #[test]
+    fn test_parse_option_truncate_text_body_error_invalid() {
+        let mut reader = Reader::new("--truncate-text-body=abc\n");
+        let mut options = CliOptions::default();
+        let err = parse_option(&mut reader, &mut options).unwrap_err();
+        assert_eq!(err.pos, Pos::new(1, 22));
+        assert_eq!(
+            err.message,
+            "Option --truncate-text-body requires an integer value"
+        );
+    }
+
+    #[test]
+    fn test_parse_option_keep_binary_body_error_with_value() {
+        let mut reader = Reader::new("--keep-binary-body=1\n");
+        let mut options = CliOptions::default();
+        let err = parse_option(&mut reader, &mut options).unwrap_err();
+        assert_eq!(err.pos, Pos::new(1, 19));
+        assert_eq!(err.message, "Not expecting a value for this option");
     }
 }

@@ -39,6 +39,7 @@ use super::header::{
     USER_AGENT,
 };
 use super::ip::IpAddr;
+use super::mimetype;
 use super::options::{ClientOptions, Verbosity};
 use super::param::Param;
 use super::request::{
@@ -300,6 +301,30 @@ impl Client {
             && response_body.len() as u64 > max_filesize
         {
             return Err(HttpError::AllowedResponseSizeExceeded(max_filesize));
+        }
+
+        // Apply body truncation/discarding based on content type.
+        if !response_body.is_empty() {
+            let content_type = response_headers.iter().find_map(|h| {
+                if h.len() > 14 && h[..14].eq_ignore_ascii_case("content-type:") {
+                    Some(&h[14..])
+                } else {
+                    None
+                }
+            });
+            if let Some(content_type) = content_type {
+                let content_type = content_type.trim();
+                let is_text = mimetype::is_kind_of_text(content_type);
+                if !is_text && !options.keep_binary_body {
+                    response_body.clear();
+                }
+                if is_text && options.truncate_text_body >= 0 {
+                    let max_len = options.truncate_text_body as usize;
+                    if response_body.len() > max_len {
+                        response_body.truncate(max_len);
+                    }
+                }
+            }
         }
 
         let status = self.handle.response_code()?;

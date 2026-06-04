@@ -1,0 +1,12 @@
+name: truncate_text_body
+long: truncate-text-body
+value: BYTES
+value_default: -1
+value_parser: clap::value_parser!(i64)
+help: Truncate text body to BYTES bytes, -1 for full body
+help_heading: HTTP options
+allow_negative_numbers: true
+config_file: true
+env_var: HURL_TRUNCATE_TEXT_BODY
+---
+Truncate text response body to BYTES bytes, -1 for full body.

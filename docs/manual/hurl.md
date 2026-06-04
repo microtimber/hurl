@@ -253,6 +253,12 @@ This option tells Hurl to use IPv6 addresses only when resolving host names, and
 
 Environment variables: HURL_IPV6
 
+#### --keep-binary-body {#keep-binary-body}
+
+Keep binary response body, even when the response content type is not text.
+
+Environment variables: HURL_KEEP_BINARY_BODY
+
 #### --key <KEY> {#key}
 
 Private key file name.
@@ -354,6 +360,12 @@ Provide a custom address for a specific host and port pair. Using this, you can 
 (Windows) This option tells Hurl to disable certificate revocation checks. WARNING: this option loosens the SSL security, and by using this flag you ask for exactly that.
 
 This is a cli-only option.
+
+#### --truncate-text-body <BYTES> {#truncate-text-body}
+
+Truncate text response body to BYTES bytes, -1 for full body.
+
+Environment variables: HURL_TRUNCATE_TEXT_BODY
 
 #### --unix-socket <PATH> {#unix-socket}
 

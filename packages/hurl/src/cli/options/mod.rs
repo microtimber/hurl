@@ -80,6 +80,8 @@ pub struct CliOptions {
     pub ip_resolve: Option<IpResolve>,
     pub jobs: Option<usize>,
     pub json_report_dir: Option<PathBuf>,
+    pub keep_binary_body: bool,
+    pub truncate_text_body: i64,
     pub junit_file: Option<PathBuf>,
     pub limit_rate: Option<BytesPerSec>,
     pub max_filesize: Option<u64>,
@@ -279,6 +281,8 @@ impl Default for CliOptions {
             jobs: None,
             json_report_dir: None,
             junit_file: None,
+            keep_binary_body: false,
+            truncate_text_body: -1,
             limit_rate: None,
             max_filesize: None,
             max_redirect: Count::Finite(50),
@@ -415,6 +419,8 @@ impl CliOptions {
         let use_cookie_store = !self.no_cookie_store;
         let user = self.user.clone();
         let user_agent = self.user_agent.clone();
+        let keep_binary_body = self.keep_binary_body;
+        let truncate_text_body = self.truncate_text_body;
 
         Ok(RunnerOptionsBuilder::new()
             .aws_sigv4(aws_sigv4)
@@ -464,6 +470,8 @@ impl CliOptions {
             .use_cookie_store(use_cookie_store)
             .user(user)
             .user_agent(user_agent)
+            .keep_binary_body(keep_binary_body)
+            .truncate_text_body(truncate_text_body)
             .build())
     }
 

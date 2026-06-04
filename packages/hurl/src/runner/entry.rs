@@ -261,6 +261,8 @@ impl ClientOptions {
             http_version: runner_options.http_version,
             ip_resolve: runner_options.ip_resolve,
             max_filesize: runner_options.max_filesize,
+            keep_binary_body: runner_options.keep_binary_body,
+            truncate_text_body: runner_options.truncate_text_body,
             max_recv_speed: runner_options.max_recv_speed,
             max_redirect: runner_options.max_redirect,
             max_send_speed: runner_options.max_send_speed,

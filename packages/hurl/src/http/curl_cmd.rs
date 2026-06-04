@@ -706,6 +706,8 @@ mod tests {
             http_version: RequestedHttpVersion::Http10,
             insecure: true,
             ip_resolve: IpResolve::IpV6,
+            keep_binary_body: false,
+            truncate_text_body: 32,
             max_filesize: None,
             max_recv_speed: Some(BytesPerSec(8000)),
             max_redirect: Count::Finite(10),

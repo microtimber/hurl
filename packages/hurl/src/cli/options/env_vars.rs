@@ -28,7 +28,7 @@ use super::context::{
     HURL_CONNECT_TIMEOUT, HURL_DELAY, HURL_ERROR_FORMAT, HURL_FOLLOW_LOCATION,
     HURL_FOLLOW_LOCATION_TRUSTED, HURL_HEADER, HURL_JOBS, HURL_LIMIT_RATE, HURL_MAX_FILESIZE,
     HURL_MAX_REDIRS, HURL_MAX_TIME, HURL_NO_HEADER, HURL_RETRY, HURL_RETRY_INTERVAL,
-    HURL_VERBOSITY,
+    HURL_VERBOSITY, HURL_TRUNCATE_TEXT_BODY,
 };
 use super::variables::TypeKind;
 use super::{
@@ -190,6 +190,19 @@ fn jobs(
             .parse::<usize>()
             .map(Some)
             .map_err(|e| err_from(e, HURL_JOBS)),
+        None => Ok(default_value),
+    }
+}
+
+fn keep_binary_body(context: &RunContext, default_value: bool) -> bool {
+    context.keep_binary_body_env_var().unwrap_or(default_value)
+}
+
+fn truncate_text_body(context: &RunContext, default_value: i64) -> Result<i64, CliOptionsError> {
+    match context.truncate_text_body_env_var() {
+        Some(val) => val
+            .parse::<i64>()
+            .map_err(|e| err_from(e, HURL_TRUNCATE_TEXT_BODY)),
         None => Ok(default_value),
     }
 }
@@ -397,6 +410,8 @@ pub fn parse_env_vars(
         follow_location_trusted(context, default_options.follow_location_trusted);
     let insecure = insecure(context, default_options.insecure);
     let jobs = jobs(context, default_options.jobs)?;
+    let keep_binary_body = keep_binary_body(context, default_options.keep_binary_body);
+    let truncate_text_body = truncate_text_body(context, default_options.truncate_text_body)?;
     let limit_rate = limit_rate(context, default_options.limit_rate)?;
     let max_filesize = max_filesize(context, default_options.max_filesize)?;
     let max_redirect = max_redirect(context, default_options.max_redirect)?;
@@ -429,6 +444,8 @@ pub fn parse_env_vars(
         insecure,
         ip_resolve,
         jobs,
+        keep_binary_body,
+        truncate_text_body,
         limit_rate,
         max_filesize,
         max_redirect,
@@ -589,5 +606,79 @@ mod tests {
         assert_eq!(updated_options.secrets["secret1"], "SECRET1".to_string(),);
         assert_eq!(updated_options.secrets["secret2"], "SECRET2".to_string(),);
         assert_eq!(updated_options.secrets["secret3"], "SECRET3".to_string(),);
+    }
+
+    #[test]
+    fn test_keep_binary_body_env_var() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+        assert!(!options.keep_binary_body);
+
+        let env_vars = HashMap::from([("HURL_KEEP_BINARY_BODY".to_string(), "true".to_string())]);
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, options).unwrap();
+        assert!(updated_options.keep_binary_body);
+    }
+
+    #[test]
+    fn test_keep_binary_body_env_var_false() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+        assert!(!options.keep_binary_body);
+
+        let env_vars = HashMap::from([("HURL_KEEP_BINARY_BODY".to_string(), "false".to_string())]);
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, options).unwrap();
+        assert!(!updated_options.keep_binary_body);
+    }
+
+    #[test]
+    fn test_truncate_text_body_env_var() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+        assert_eq!(options.truncate_text_body, -1);
+
+        let env_vars = HashMap::from([("HURL_TRUNCATE_TEXT_BODY".to_string(), "128".to_string())]);
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, options).unwrap();
+        assert_eq!(updated_options.truncate_text_body, 128);
+    }
+
+    #[test]
+    fn test_truncate_text_body_env_var_negative() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+        assert_eq!(options.truncate_text_body, -1);
+
+        let env_vars = HashMap::from([("HURL_TRUNCATE_TEXT_BODY".to_string(), "-1".to_string())]);
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, options).unwrap();
+        assert_eq!(updated_options.truncate_text_body, -1);
+    }
+
+    #[test]
+    fn test_truncate_text_body_env_var_invalid() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+
+        let env_vars = HashMap::from([("HURL_TRUNCATE_TEXT_BODY".to_string(), "abc".to_string())]);
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let result = parse_env_vars(&ctx, options);
+        assert!(result.is_err());
     }
 }

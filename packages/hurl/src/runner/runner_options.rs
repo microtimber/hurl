@@ -33,6 +33,8 @@ pub struct RunnerOptionsBuilder {
     client_cert_file: Option<String>,
     client_key_file: Option<String>,
     color_stdout: bool,
+    keep_binary_body: bool,
+    truncate_text_body: i64,
     compressed: bool,
     connect_timeout: Duration,
     connects_to: Vec<String>,
@@ -88,6 +90,8 @@ impl Default for RunnerOptionsBuilder {
             client_cert_file: None,
             client_key_file: None,
             color_stdout: true,
+            keep_binary_body: false,
+            truncate_text_body: -1,
             compressed: false,
             connect_timeout: Duration::from_secs(300),
             connects_to: vec![],
@@ -182,6 +186,18 @@ impl RunnerOptionsBuilder {
     /// to a file or to standard output through `[Options]` section.
     pub fn color_stdout(&mut self, color_stdout: bool) -> &mut Self {
         self.color_stdout = color_stdout;
+        self
+    }
+
+    /// Whether to keep binary response body (by default, binary body is discarded).
+    pub fn keep_binary_body(&mut self, keep_binary_body: bool) -> &mut Self {
+        self.keep_binary_body = keep_binary_body;
+        self
+    }
+
+    /// Truncate text body to this many bytes. -1 means keep full body.
+    pub fn truncate_text_body(&mut self, truncate_text_body: i64) -> &mut Self {
+        self.truncate_text_body = truncate_text_body;
         self
     }
 
@@ -490,6 +506,8 @@ impl RunnerOptionsBuilder {
             client_cert_file: self.client_cert_file.clone(),
             client_key_file: self.client_key_file.clone(),
             color_stdout: self.color_stdout,
+            keep_binary_body: self.keep_binary_body,
+            truncate_text_body: self.truncate_text_body,
             compressed: self.compressed,
             connect_timeout: self.connect_timeout,
             connects_to: self.connects_to.clone(),
@@ -557,6 +575,10 @@ pub struct RunnerOptions {
     /// Whether we use color in stdout, or not. This property is used when response is outputted
     /// to a file or to standard output through `[Options]` section.
     pub(crate) color_stdout: bool,
+    /// Whether to keep binary response body (by default, binary body is discarded).
+    pub(crate) keep_binary_body: bool,
+    /// Truncate text body to this many bytes. -1 means keep full body.
+    pub(crate) truncate_text_body: i64,
     /// Requests a compressed response using one of the algorithms br, gzip, deflate and
     /// automatically decompress the content.
     pub(crate) compressed: bool,

@@ -67,6 +67,8 @@ pub fn parse_cli_args(
         .arg(commands::http11())
         .arg(commands::http2())
         .arg(commands::http3())
+        .arg(commands::keep_binary_body())
+        .arg(commands::truncate_text_body())
         .arg(commands::input_files())
         .arg(commands::insecure())
         .arg(commands::ipv4())
@@ -205,6 +207,8 @@ fn parse_arg_matches(
     let input_files = input_files(arg_matches, context)?;
     let insecure = insecure(arg_matches, default_options.insecure);
     let ip_resolve = ip_resolve(arg_matches, default_options.ip_resolve);
+    let keep_binary_body = keep_binary_body(arg_matches, default_options.keep_binary_body);
+    let truncate_text_body = truncate_text_body(arg_matches, default_options.truncate_text_body);
     let jobs = jobs(arg_matches, default_options.jobs);
     let json_report_dir = json_report_dir(arg_matches, default_options.json_report_dir)?;
     let junit_file = junit_file(arg_matches, default_options.junit_file);
@@ -273,6 +277,8 @@ fn parse_arg_matches(
         insecure,
         ip_resolve,
         json_report_dir,
+        keep_binary_body,
+        truncate_text_body,
         junit_file,
         limit_rate,
         max_filesize,
@@ -796,6 +802,18 @@ fn path_as_is(arg_matches: &ArgMatches, default_value: bool) -> bool {
 
 fn pinned_pub_key(arg_matches: &ArgMatches, default_value: Option<String>) -> Option<String> {
     get::<String>(arg_matches, "pinned_pub_key").or(default_value)
+}
+
+fn keep_binary_body(arg_matches: &ArgMatches, default_value: bool) -> bool {
+    if has_flag(arg_matches, "keep_binary_body") {
+        true
+    } else {
+        default_value
+    }
+}
+
+fn truncate_text_body(arg_matches: &ArgMatches, default_value: i64) -> i64 {
+    get::<i64>(arg_matches, "truncate_text_body").unwrap_or(default_value)
 }
 
 fn pretty(arg_matches: &ArgMatches, default_value: PrettyMode) -> PrettyMode {

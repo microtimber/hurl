@@ -47,6 +47,7 @@ _hurl() {
     '(-6 --ipv6)'{-6,--ipv6}'[Tell Hurl to use IPv6 addresses only when resolving host names, and not for example try IPv4]' \
     '--jobs[Maximum number of parallel jobs, 1 to disable parallel execution]: :' \
     '--json[Output each Hurl file result to JSON]' \
+    '--keep-binary-body[Keep binary response body]' \
     '--limit-rate[Specify the maximum transfer rate in bytes/second, for both downloads and uploads]: :' \
     '--max-filesize[Specify the maximum size in bytes of a file to download]: :' \
     '--max-redirs[Maximum number of redirects allowed, -1 for unlimited redirects]: :' \
@@ -83,6 +84,7 @@ _hurl() {
     '--ssl-no-revoke[(Windows) Tell Hurl to disable certificate revocation checks]' \
     '--test[Activate test mode (use parallel execution)]' \
     '--to-entry[Execute Hurl file to ENTRY_NUMBER (starting at 1)]: :' \
+    '--truncate-text-body[Truncate text body to BYTES bytes, -1 for full body]: :' \
     '--unix-socket[(HTTP) Connect through this Unix domain socket, instead of using the network]: :_files' \
     '(-u --user)'{-u,--user}'[Add basic Authentication header to each request]: :' \
     '(-A --user-agent)'{-A,--user-agent}'[Specify the User-Agent string to send to the HTTP server]: :' \

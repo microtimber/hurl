@@ -316,6 +316,14 @@ pub fn json() -> clap::Arg {
         .action(clap::ArgAction::SetTrue)
 }
 
+pub fn keep_binary_body() -> clap::Arg {
+    clap::Arg::new("keep_binary_body")
+        .long("keep-binary-body")
+        .help("Keep binary response body")
+        .help_heading("HTTP options")
+        .action(clap::ArgAction::SetTrue)
+}
+
 pub fn limit_rate() -> clap::Arg {
     clap::Arg::new("limit_rate")
         .long("limit-rate")
@@ -649,6 +657,17 @@ pub fn to_entry() -> clap::Arg {
         .help("Execute Hurl file to ENTRY_NUMBER (starting at 1)")
         .help_heading("Run options")
         .num_args(1)
+}
+
+pub fn truncate_text_body() -> clap::Arg {
+    clap::Arg::new("truncate_text_body")
+        .long("truncate-text-body")
+        .value_name("BYTES")
+        .value_parser(clap::value_parser!(i64))
+        .help("Truncate text body to BYTES bytes, -1 for full body [default: -1]")
+        .help_heading("HTTP options")
+        .num_args(1)
+        .allow_negative_numbers(true)
 }
 
 pub fn unix_socket() -> clap::Arg {
