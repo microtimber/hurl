@@ -77,6 +77,10 @@ fn delay(context: &RunContext, default_value: Duration) -> Result<Duration, CliO
     }
 }
 
+fn discard_body(context: &RunContext, default_value: bool) -> bool {
+    context.discard_body_env_var().unwrap_or(default_value)
+}
+
 fn error_format(
     context: &RunContext,
     default_value: ErrorFormat,
@@ -384,6 +388,7 @@ pub fn parse_env_vars(
     let fail_with_body = fail_with_body(context, default_options.fail_with_body);
     let continue_on_error = continue_on_error(context, default_options.continue_on_error);
     let delay = delay(context, default_options.delay)?;
+    let discard_body = discard_body(context, default_options.discard_body);
     let error_format = error_format(context, default_options.error_format)?;
     let headers = headers(context, default_options.headers)?;
     let http_version = http_version(context, default_options.http_version);
@@ -420,6 +425,7 @@ pub fn parse_env_vars(
         connect_timeout,
         continue_on_error,
         delay,
+        discard_body,
         error_format,
         fail_with_body,
         headers,
@@ -589,5 +595,24 @@ mod tests {
         assert_eq!(updated_options.secrets["secret1"], "SECRET1".to_string(),);
         assert_eq!(updated_options.secrets["secret2"], "SECRET2".to_string(),);
         assert_eq!(updated_options.secrets["secret3"], "SECRET3".to_string(),);
+    }
+
+    #[test]
+    fn test_discard_body_env_var() {
+        let stdin_term = true;
+        let stdout_term = true;
+        let stderr_term = true;
+
+        let options = CliOptions::default();
+        let env_vars = HashMap::new();
+        let ctx = RunContext::new(env_vars, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, options).unwrap();
+        assert!(!updated_options.discard_body);
+
+        let env_vars_override =
+            HashMap::from([("HURL_DISCARD_BODY".to_string(), "true".to_string())]);
+        let ctx = RunContext::new(env_vars_override, stdin_term, stdout_term, stderr_term);
+        let updated_options = parse_env_vars(&ctx, CliOptions::default()).unwrap();
+        assert!(updated_options.discard_body);
     }
 }

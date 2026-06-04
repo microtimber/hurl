@@ -201,6 +201,14 @@ See also [`--resolve`](#resolve).
 
 Tell Hurl to use HTTP Digest authentication
 
+#### --discard-body {#discard-body}
+
+Discard response body to free memory as early as possible. If the Hurl file does not contain any asserts or captures that reference the response body, this option lets Hurl release the body buffer immediately after the HTTP transfer completes, instead of keeping it in memory for the lifetime of the run. This is useful in parallel and repeated modes when responses are large, where bodies would otherwise accumulate and consume a large amount of memory. Without this option, Hurl keeps the body in memory until the program ends.
+
+Environment variables: HURL_DISCARD_BODY
+
+This is a cli-only option.
+
 #### -H, --header <NAME:VALUE> {#header}
 
 Add an extra header to include in information sent. Can be used several times in a command.

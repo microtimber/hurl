@@ -153,6 +153,14 @@ pub fn digest() -> clap::Arg {
         .action(clap::ArgAction::SetTrue)
 }
 
+pub fn discard_body() -> clap::Arg {
+    clap::Arg::new("discard_body")
+        .long("discard-body")
+        .help("Discard response body to free memory as early as possible")
+        .help_heading("HTTP options")
+        .action(clap::ArgAction::SetTrue)
+}
+
 pub fn error_format() -> clap::Arg {
     clap::Arg::new("error_format")
         .long("error-format")

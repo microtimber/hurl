@@ -1,0 +1,9 @@
+name: discard_body
+long: discard-body
+help: Discard response body to free memory as early as possible
+help_heading: HTTP options
+cli_only: true
+config_file: true
+env_var: HURL_DISCARD_BODY
+---
+Discard response body to free memory as early as possible. If the Hurl file does not contain any asserts or captures that reference the response body, this option lets Hurl release the body buffer immediately after the HTTP transfer completes, instead of keeping it in memory for the lifetime of the run. This is useful in parallel and repeated modes when responses are large, where bodies would otherwise accumulate and consume a large amount of memory. Without this option, Hurl keeps the body in memory until the program ends.

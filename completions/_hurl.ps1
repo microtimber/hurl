@@ -34,6 +34,7 @@ Register-ArgumentCompleter -Native -CommandName 'hurl' -ScriptBlock {
             [CompletionResult]::new('--curl', 'curl', [CompletionResultType]::ParameterName, 'Export each request to a list of curl commands')
             [CompletionResult]::new('--delay', 'delay', [CompletionResultType]::ParameterName, 'Sets delay before each request (aka sleep)')
             [CompletionResult]::new('--digest', 'digest', [CompletionResultType]::ParameterName, 'Tell Hurl to use HTTP Digest authentication')
+            [CompletionResult]::new('--discard-body', 'discard-body', [CompletionResultType]::ParameterName, 'Discard response body to free memory as early as possible')
             [CompletionResult]::new('--error-format', 'error-format', [CompletionResultType]::ParameterName, 'Control the format of error messages')
             [CompletionResult]::new('--fail-with-body', 'fail-with-body', [CompletionResultType]::ParameterName, 'Output body response if there are any errors')
             [CompletionResult]::new('--file-root', 'file-root', [CompletionResultType]::ParameterName, 'Set root directory to import files [default: input file directory]')

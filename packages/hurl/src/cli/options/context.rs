@@ -48,6 +48,7 @@ const HURL_PREFIX: &str = "HURL_";
 
 pub const HURL_COLOR: &str = "HURL_COLOR";
 pub const HURL_COMPRESSED: &str = "HURL_COMPRESSED";
+pub const HURL_DISCARD_BODY: &str = "HURL_DISCARD_BODY";
 pub const HURL_FAIL_WITH_BODY: &str = "HURL_FAIL_WITH_BODY";
 pub const HURL_CONNECT_TIMEOUT: &str = "HURL_CONNECT_TIMEOUT";
 pub const HURL_CONTINUE_ON_ERROR: &str = "HURL_CONTINUE_ON_ERROR";
@@ -135,6 +136,11 @@ impl RunContext {
     /// Returns the env var for compressed response.
     pub fn compressed_env_var(&self) -> Option<bool> {
         self.get_env_var_bool(HURL_COMPRESSED)
+    }
+
+    /// Returns the env var for discarding the response body.
+    pub fn discard_body_env_var(&self) -> Option<bool> {
+        self.get_env_var_bool(HURL_DISCARD_BODY)
     }
 
     /// Returns the env var for fail with body.

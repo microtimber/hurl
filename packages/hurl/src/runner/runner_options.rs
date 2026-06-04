@@ -41,6 +41,7 @@ pub struct RunnerOptionsBuilder {
     cookie_input_file: Option<String>,
     delay: Duration,
     digest: bool,
+    discard_body: bool,
     fail_with_body: bool,
     follow_location: FollowLocation,
     from_entry: Option<usize>,
@@ -96,6 +97,7 @@ impl Default for RunnerOptionsBuilder {
             cookie_input_file: None,
             delay: Duration::from_millis(0),
             digest: false,
+            discard_body: false,
             fail_with_body: false,
             follow_location: FollowLocation::default(),
             from_entry: None,
@@ -339,6 +341,12 @@ impl RunnerOptionsBuilder {
         self
     }
 
+    /// Whether to discard response bodies to free memory as early as possible.
+    pub fn discard_body(&mut self, discard_body: bool) -> &mut Self {
+        self.discard_body = discard_body;
+        self
+    }
+
     /// Sets the HTTP Negotiate (SPNEGO) authentication flag.
     pub fn negotiate(&mut self, negotiate: bool) -> &mut Self {
         self.negotiate = negotiate;
@@ -498,6 +506,7 @@ impl RunnerOptionsBuilder {
             continue_on_error: self.continue_on_error,
             cookie_input_file: self.cookie_input_file.clone(),
             digest: self.digest,
+            discard_body: self.discard_body,
             fail_with_body: self.fail_with_body,
             follow_location: self.follow_location,
             from_entry: self.from_entry,
@@ -574,6 +583,8 @@ pub struct RunnerOptions {
     pub(crate) cookie_input_file: Option<String>,
     /// Enables HTTP Digest authentication.
     pub(crate) digest: bool,
+    /// Discards response body to free memory as early as possible.
+    pub(crate) discard_body: bool,
     /// Outputs response body on standard output if there are any run errors.
     pub(crate) fail_with_body: bool,
     /// Sets follow redirect.

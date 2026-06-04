@@ -64,6 +64,7 @@ pub struct CliOptions {
     pub curl_file: Option<PathBuf>,
     pub delay: Duration,
     pub digest: bool,
+    pub discard_body: bool,
     pub error_format: ErrorFormat,
     pub fail_with_body: bool,
     pub file_root: Option<String>,
@@ -262,6 +263,7 @@ impl Default for CliOptions {
             curl_file: None,
             delay: Duration::from_millis(0),
             digest: false,
+            discard_body: false,
             error_format: ErrorFormat::Short,
             fail_with_body: false,
             file_root: None,
@@ -344,6 +346,7 @@ impl CliOptions {
         let cookie_input_file = self.cookie_input_file.clone();
         let delay = self.delay;
         let digest = self.digest;
+        let discard_body = self.discard_body;
         let fail_with_body = self.fail_with_body;
         let follow_location = self.follow_location;
         let follow_location_trusted = self.follow_location_trusted;
@@ -430,6 +433,7 @@ impl CliOptions {
             .continue_on_error(continue_on_error)
             .context_dir(&context_dir)
             .cookie_input_file(cookie_input_file)
+            .discard_body(discard_body)
             .fail_with_body(fail_with_body)
             .follow_location(follow_location)
             .from_entry(from_entry)

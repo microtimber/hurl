@@ -256,6 +256,7 @@ impl ClientOptions {
             connects_to: runner_options.connects_to.clone(),
             cookie_input_file: runner_options.cookie_input_file.clone(),
             digest: runner_options.digest,
+            discard_body: runner_options.discard_body,
             follow_location: runner_options.follow_location,
             headers: runner_options.headers.clone(),
             http_version: runner_options.http_version,

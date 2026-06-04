@@ -29,6 +29,7 @@ _hurl() {
     '--curl[Export each request to a list of curl commands]: :_files' \
     '--delay[Sets delay before each request (aka sleep)]: :' \
     '--digest[Tell Hurl to use HTTP Digest authentication]' \
+    '--discard-body[Discard response body to free memory as early as possible]' \
     '--error-format[Control the format of error messages]: :' \
     '--fail-with-body[Output body response if there are any errors]' \
     '--file-root[Set root directory to import files \[default: input file directory\]]: :' \

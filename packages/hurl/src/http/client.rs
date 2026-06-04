@@ -310,6 +310,10 @@ impl Client {
         let headers = self.parse_response_headers(&response_headers);
         let length = response_body.len();
 
+        if options.discard_body {
+            response_body.clear();
+        }
+
         let certificate = self.cert_info(logger)?;
         let duration = start.elapsed();
         let stop_dt = start_dt + duration;

@@ -181,6 +181,11 @@ fn parse_option(reader: &mut Reader, options: &mut CliOptions) -> Result<(), Con
             options.fail_with_body = true;
             Ok(())
         }
+        "discard-body" => {
+            expect_no_value(reader)?;
+            options.discard_body = true;
+            Ok(())
+        }
         "no-assert" => {
             expect_no_value(reader)?;
             options.no_assert = true;
@@ -334,6 +339,25 @@ mod tests {
         assert!(parse_option(&mut reader, &mut options).is_ok());
         assert!(options.no_assert);
         assert_eq!(reader.cursor().pos, Pos::new(2, 1));
+    }
+
+    #[test]
+    fn test_parse_option_discard_body() {
+        let mut reader = Reader::new("--discard-body\n");
+        let mut options = CliOptions::default();
+        assert!(!options.discard_body);
+        assert!(parse_option(&mut reader, &mut options).is_ok());
+        assert!(options.discard_body);
+        assert_eq!(reader.cursor().pos, Pos::new(2, 1));
+    }
+
+    #[test]
+    fn test_parse_option_discard_body_error_with_value() {
+        let mut reader = Reader::new("--discard-body=1\n");
+        let mut options = CliOptions::default();
+        let err = parse_option(&mut reader, &mut options).unwrap_err();
+        assert_eq!(err.pos, Pos::new(1, 15));
+        assert_eq!(err.message, "Not expecting a value for this option");
     }
 
     #[test]
